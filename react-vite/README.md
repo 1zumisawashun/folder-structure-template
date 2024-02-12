@@ -4,11 +4,11 @@
 src/
 ├─ @types/
 ├─ assets/
-├─ components/ # 機能に依存しないComponent
-├─ features/ # 機能に依存するComponentやHookなど
-├─ functions/ # 機能に依存しない関数
-├─ pages/ # routingに責務を持つ・実態はfeaturesに配置
-├─ providers/
+├─ components/ # 機能に依存しないcomponent
+├─ features/ # 機能に依存するcomponentやfunctionなど
+├─ functions/ # 機能に依存しないfunction
+├─ pages/ # routingにのみ関心を持つ・実態はfeaturesに配置する
+├─ providers/ # 依存先はapp.tsx
 ├─ routers/
 ├─ app.tsx
 ```
@@ -61,11 +61,11 @@ functions/
 
 ```
 features/
-├─ Todo/
+├─ todo/
 │  ├─ TodoCreate/ # やること作成
 │  ├─ TodoEdit/ # やること編集
-│  ├─ Todo/ # やること詳細
-│  └─ Todos/ # やること一覧
+│  ├─ TodoDetail/ # やること詳細
+│  └─ TodoList/ # やること一覧
 │     ├─ components/ # presentation（複数入ることを想定）
 │     ├─ hooks/ # logic（複数入ることを想定）
 │     ├─ styles/ # style（複数入ることを想定）
