@@ -22,8 +22,7 @@ folder-structure-template
 
 ```
 components/
-├─ images/ # アプリケーション全体で使う画像を奥
-│   ├─ image_sample.jpg
+├─ images/ # アプリケーション全体で使う画像を置く
 │   └─ image_sample.jpg
 └─ styles/ # アプリケーション全体で使うレイアウトを置く（ITCSS）
     ├─ components/
