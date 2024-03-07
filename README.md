@@ -110,6 +110,7 @@ features/
 - features/ドメイン/〇〇のようにドメイン直下は別ドメイン or 同ドメインかつ別ページでも使用される
 - 例えば ProductForm は ProductCreate と ProductEdit で使われているので features/product/components/に格納している
 - hooks や型定義も同様にドメイン直下に配置して暗黙的に使いまわされることを明示する
+- テストを書くのもここに集中させればよくないか？
 
 <img width="374" alt="image" src="https://github.com/1zumisawashun/unifree-client/assets/65071534/c9034c1e-e6b8-459e-ac70-1ce6874d5e78">
 
