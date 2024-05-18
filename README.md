@@ -1,6 +1,7 @@
 # folder-structure-template
 
 - React・Next.js のディレクトリ構成の骨子をまとめたリポジトリです
+- スタイルは CSS Modules を想定しています
 
 ## Overview
 
@@ -27,7 +28,7 @@ assets/
     └─ app.css
 ```
 
-ITCSS のガイドラインは[こちら](https://github.com/1zumisawashun/sass-template)
+- ITCSS のガイドラインは[こちら](https://github.com/1zumisawashun/sass-template)
 
 ## components
 
@@ -38,13 +39,13 @@ components/
 │     ├─ index.spec.tsx
 │     ├─ index.stories.tsx
 │     ├─ index.tsx
-│     └─ styles.module.css
+│     └─ index.module.css
 ├─ elements/
 │  └─ Dialog
 │     ├─ index.spec.tsx
 │     ├─ index.stories.tsx
 │     ├─ index.tsx
-│     └─ styles.module.css
+│     └─ index.module.css
 ├─ forms/
 │  ├─ InputText/
 │  ├─ InputSelect/
@@ -55,7 +56,7 @@ components/
          ├─ index.spec.tsx
          ├─ index.stories.tsx
          ├─ index.tsx
-         └─ styles.module.css
+         └─ index.module.css
 ```
 
 ## functions
