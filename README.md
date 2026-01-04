@@ -33,6 +33,8 @@ app/
 - App Router の世界観に従い、ルーティングとデータフェッチングを担当
 - **実装の詳細**: 各`page.tsx`は`pages/`ディレクトリ内のコンポーネントをインポートして使用
 
+### ディレクトリ構成
+
 ```
 (pages)/
 ├─ (root)/
@@ -52,6 +54,8 @@ app/
 - グローバルな型定義を配置するディレクトリ
 - 外部ライブラリの型拡張や、アプリケーション全体で使用する共通の型定義を管理
 
+### ディレクトリ構成
+
 ```
 @types/
 ├─ global.d.ts
@@ -63,6 +67,8 @@ app/
 
 - 静的アセット(画像、フォント、スタイル)を管理するディレクトリ
 - スタイルは**ITCSS**のアーキテクチャに従って構成
+
+### ディレクトリ構成
 
 ```
 assets/
@@ -90,6 +96,8 @@ assets/
 - アプリケーション全体で再利用可能な UI コンポーネントを管理
 - **Base UI**(headless UI)を推奨 - ロジックと見た目を分離し、柔軟なカスタマイズが可能
 - 各コンポーネントには`.module.css`, `.stories.tsx`, `.test.tsx`を含める
+
+### ディレクトリ構成
 
 ```
 components/
@@ -197,6 +205,8 @@ features/
 - `(pages)/`と同じディレクトリ構成で、各ページの実装を配置
 - ページ専用のコンポーネントは`components/`配下に配置
 
+### ディレクトリ構成
+
 ```
 pages/
 ├─ articles/
@@ -216,25 +226,12 @@ pages/
 └─ ...
 ```
 
-### pages 配下のディレクトリ
-
-#### `components/`
-
-- **配置対象**: そのページ専用のコンポーネント
-- **スコープ**: 単一ページ内でのみ使用
-- **例**: `pages/articles/create/components/ArticleCreateForm.tsx`
-
-#### `shared/`
-
-- **配置対象**: 同じドメイン内で複数ページで共通利用するコンポーネント
-- **スコープ**: 同一ドメイン内の複数ページで使用
-- **例**: `pages/articles/shared/ArticleForm.tsx` - 追加と編集で共通のフォーム
-- **使用例**: `ArticleCreateForm`が`ArticleForm`を使って作成ページ用のフォームを構築
-
 ## providers
 
 - アプリケーション全体で使用する Context や Provider、状態管理を配置
 - React Context API、TanStack Query、Jotai、Zustand などのプロバイダーを管理
+
+### ディレクトリ構成
 
 ```
 providers/
