@@ -16,8 +16,8 @@
 ```
 assets/
 ├─ images/
-│   └─ image_sample.jpg
-└─ styles/ # ITCSSを採用している
+│   └─ ...
+└─ styles/
     ├─ components/
     ├─ elements/
     ├─ generics/
@@ -36,27 +36,27 @@ assets/
 components/
 ├─ buttons/
 │  └─ Button
-│     ├─ index.spec.tsx
+│     ├─ index.module.css
 │     ├─ index.stories.tsx
-│     ├─ index.tsx
-│     └─ index.module.css
+│     ├─ index.test.tsx
+│     └─ index.tsx
 ├─ elements/
 │  └─ Dialog
-│     ├─ index.spec.tsx
+│     ├─ index.module.css
 │     ├─ index.stories.tsx
-│     ├─ index.tsx
-│     └─ index.module.css
+│     ├─ index.test.tsx
+│     └─ index.tsx
 ├─ forms/
-│  ├─ InputText/
-│  ├─ InputSelect/
-│  ├─ InputCheckbox/
+│  ├─ Checkbox/
+│  ├─ TextInput/
+│  ├─ Select/
 │  └─ ...
-└─ layouts/ # pagesディレクトリに依存する
-      └─ Header
-         ├─ index.spec.tsx
+└─ layouts/
+      └─ VStack
+         ├─ index.module.css
          ├─ index.stories.tsx
-         ├─ index.tsx
-         └─ index.module.css
+         ├─ index.test.tsx
+         └─ index.tsx
 ```
 
 ## functions
@@ -67,7 +67,7 @@ functions/
 ├─ helpers/
 ├─ hooks/
 │     └─ useDisclosure/
-│        ├─ index.spec.ts
+│        ├─ index.test.ts
 │        └─ index.ts
 ├─ libs/
 └─ types/
@@ -116,3 +116,28 @@ features/
 <img width="374" alt="image" src="https://github.com/1zumisawashun/unifree-client/assets/65071534/c9034c1e-e6b8-459e-ac70-1ce6874d5e78">
 
 </details>
+
+## Next.js App Router
+
+### フェッチ戦略
+
+以下で統一する
+
+- (pages)ディレクトリでフェッチをする
+- component level fetch は実施しない
+- (pages)ディレクトリでフェッチした値を props で小コンポーネントに流す
+
+※従来の Page Router との差分を無くし認知負荷を下げる意図がある + App Router に依存する箇所を(pages)ディレクトリに集約することで、万が一 App Router を剥がす時に容易にする
+
+### 注意点
+
+- 本来であれば「自律分散なデータ取得」が App Router の基本になるので従来の Page Router（gssp）のデータ取得はアンチパターンかもしれない
+
+### 「自律分散なデータ取得」のメリット
+
+> 非同期コンポーネントにすることで Streaming SSR + Suspense ができる
+
+### トラブルシューティング
+
+- 実装上どうしても(pages)ディレクトリ以外でフェッチをしなくてはいけない時は？
+  - Presentation / Container パターンを使う
