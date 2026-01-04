@@ -1,5 +1,20 @@
 # folder-structure-template
 
+## 目次
+
+- [Overview](#overview)
+  - [技術選定](#技術選定)
+  - [全体のディレクトリ構成](#全体のディレクトリ構成)
+- [(pages)](#pages)
+- [@types](#types)
+- [assets](#assets)
+- [components](#components)
+- [functions](#functions)
+- [features](#features)
+- [pages](#pages-1)
+- [providers](#providers)
+- [トラブルシューティング](#トラブルシューティング)
+
 ## Overview
 
 React・Next.js のディレクトリ構成の骨子をまとめたリポジトリです
@@ -47,6 +62,17 @@ app/
 │  ├─ page.tsx
 │  └─ loading.tsx
 └─ ...
+```
+
+### インポート例
+
+```tsx
+// (pages)/articles/create/page.tsx
+import { ArticleCreate } from "@/pages/articles/create/ArticleCreate";
+
+export default function Page() {
+  return <ArticleCreate />;
+}
 ```
 
 ## @types
@@ -146,6 +172,8 @@ components/
 - アプリケーション全体で使用する汎用的なロジック・ユーティリティを管理
 - ドメインに依存しない、純粋関数や共通処理を配置
 
+### ディレクトリ構成
+
 ```
 functions/
 ├─ constants/         # 定数定義
@@ -226,6 +254,21 @@ pages/
 └─ ...
 ```
 
+### pages 配下のディレクトリ
+
+#### `components/`
+
+- **配置対象**: そのページ専用のコンポーネント
+- **スコープ**: 単一ページ内でのみ使用
+- **例**: `pages/articles/create/components/ArticleCreateForm.tsx`
+
+#### `shared/`
+
+- **配置対象**: 同じドメイン内で複数ページで共通利用するコンポーネント
+- **スコープ**: 同一ドメイン内の複数ページで使用
+- **例**: `pages/articles/shared/ArticleForm.tsx` - 追加と編集で共通のフォーム
+- **使用例**: `ArticleCreateForm`が`ArticleForm`を使って作成ページ用のフォームを構築
+
 ## providers
 
 - アプリケーション全体で使用する Context や Provider、状態管理を配置
@@ -245,12 +288,16 @@ providers/
 
 ### コンポーネントの配置
 
+**概要**: 使用箇所に応じた配置先の判断基準
+
 | 使用箇所                   | 配置先                              | 具体例                           |
 | -------------------------- | ----------------------------------- | -------------------------------- |
 | 単一ページ内のみ           | `pages/[domain]/[page]/components/` | 記事作成ページ専用のエディタ     |
 | 同一ドメイン内の複数ページ | `pages/[domain]/shared/`            | 記事の追加・編集で共通のフォーム |
 | 複数ドメインで使用         | `features/[domain]/`                | マイページで表示する記事カード   |
 | 全ドメインで汎用的に使用   | `components/`                       | Button, Dialog 等の基本 UI       |
+
+**詳細**: 各配置先の説明
 
 #### 1. `pages/[domain]/[page]/components/`
 
