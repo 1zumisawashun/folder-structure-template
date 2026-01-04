@@ -174,22 +174,85 @@ functions/
 
 ## features
 
+- ドメイン(機能単位)ごとに共通コンポーネントや型定義を管理するディレクトリ
+
+### ディレクトリ構成
+
 ```
 features/
-├─ todo/
-│  ├─ TodoCreate/
-│  ├─ TodoEdit/
-│  ├─ TodoDetail/
-│  ├─ TodoList/
-│  │  ├─ components/
-│  │  ├─ hooks/
-│  │  └─ index.tsx
+├─ articles/                    # articlesドメイン
+│  ├─ shared/                   # 同じドメイン内で共通のコンポーネント
+│  │  └─ articleForm/          # 例: 編集と追加で共通のフォーム
+│  │     ├─ ArticleForm.tsx
+│  │     └─ ArticleForm.stories.tsx
 │  │
-│  ├─ todo.schema.ts
-│  └─ todo.type.ts
+│  ├─ articleCard/              # ドメインを跨いで使うコンポーネント
+│  ├─ articleCardGroup/         # 例: mypageでarticleCardを使う場合
+│  │
+│  ├─ articles.schema.ts        # zodスキーマ定義
+│  └─ articles.type.ts          # 型定義
 │
-└─...
+└─ mypage/
+   └─ ...
 ```
+
+### 共通コンポーネントの分け方
+
+#### 1. `pages/[page]/components/`
+
+- **配置対象**: そのページ専用のコンポーネント
+- **スコープ**: 単一ページ内でのみ使用
+- **例**: `pages/articles/create/components/ArticleCreateForm.tsx`
+
+#### 2. `features/[domain]/shared/`
+
+- **配置対象**: 同じドメイン内で複数ページで共通利用するコンポーネント
+- **スコープ**: 同一ドメイン内でのみ使用
+- **例**: `features/articles/shared/articleForm/` - 追加と編集で共通のフォーム
+
+#### 3. `features/[domain]/` 直下 (例: `articleCard/`)
+
+- **配置対象**: ドメインを跨いで使用されるコンポーネント
+- **スコープ**: 他のドメインからも参照可能
+- **例**: `features/articles/articleCard/` - mypage ドメインからも使用
+
+### 配置の判断基準
+
+| 使用箇所                   | 配置先                     | 具体例                           |
+| -------------------------- | -------------------------- | -------------------------------- |
+| 単一ページ内のみ           | `pages/[page]/components/` | 記事作成ページ専用のエディタ     |
+| 同一ドメイン内の複数ページ | `shared/`                  | 記事の追加・編集で共通のフォーム |
+| 複数ドメインで使用         | ドメイン直下               | マイページで表示する記事カード   |
+| 全ドメインで汎用的に使用   | `components/`              | Button, Dialog 等の基本 UI       |
+
+## pages
+
+- **実装の本丸**: 基本的にはここにコードを追加していく
+- `(pages)/`と同じディレクトリ構成で、各ページの実装を配置
+- ページ専用のコンポーネントは`components/`配下に配置
+
+```
+pages/
+├─ articles/
+│  ├─ (list)/
+│  │  └─ ArticleList.tsx
+│  ├─ [id]/
+│  │  └─ ArticleDetail.tsx
+│  └─ create/
+│     ├─ components/              # このページ専用のコンポーネント
+│     │  └─ ArticleCreateForm.tsx
+│     ├─ ArticleCreate.tsx
+│     └─ ArticleCreate.stories.tsx
+├─ mypage/
+│  └─ ...
+└─ ...
+```
+
+### pages 配下の `components/`
+
+- **配置対象**: そのページ専用のコンポーネント
+- **スコープ**: 単一ページ内でのみ使用
+- **例**: `pages/articles/create/components/ArticleCreateForm.tsx`
 
 ## providers
 
