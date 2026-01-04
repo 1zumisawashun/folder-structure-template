@@ -31,12 +31,13 @@ app/
 - Next.js App Router のルーティングに責務を持つディレクトリ
 - `layout.tsx`, `page.tsx`, `loading.tsx`, `error.tsx` などの Next.js の特殊ファイルを配置
 - App Router の世界観に従い、ルーティングとデータフェッチングを担当
+- **実装の詳細**: 各`page.tsx`は`pages/`ディレクトリ内のコンポーネントをインポートして使用
 
 ```
 (pages)/
 ├─ (root)/
 │  ├─ layout.tsx
-│  └─ page.tsx
+│  └─ page.tsx         # pages/xxx をインポート
 ├─ about/
 │  └─ page.tsx
 ├─ dashboard/
@@ -166,20 +167,6 @@ functions/
    └─ ...
 ```
 
-### 配置の指針
-
-- **コンポーネントの配置**:
-  - 単一ページ専用 → `pages/[domain]/[page]/components/`
-  - 同一ドメイン内で共通 → `pages/[domain]/shared/`
-  - ドメインを跨いで使用 → `features/[domain]/`
-  - 全ドメインで汎用的に使用 → `components/`
-- **関数・ユーティリティの配置**:
-  - ドメインに依存しない汎用的な関数・hooks → `functions/`
-- **型定義の配置**:
-  - ドメイン固有の型 → `features/[domain]/`
-  - 汎用的な共通型 → `functions/types/`
-  - グローバル型定義 → `@types/`
-
 ## features
 
 - ドメイン(機能単位)ごとに、**ドメインを跨いで使用されるコンポーネント**や型定義を管理するディレクトリ
@@ -203,35 +190,6 @@ features/
 └─ mypage/
    └─ ...
 ```
-
-### 共通コンポーネントの分け方
-
-#### 1. `pages/[domain]/[page]/components/`
-
-- **配置対象**: そのページ専用のコンポーネント
-- **スコープ**: 単一ページ内でのみ使用
-- **例**: `pages/articles/create/components/ArticleCreateForm.tsx`
-
-#### 2. `pages/[domain]/shared/`
-
-- **配置対象**: 同じドメイン内で複数ページで共通利用するコンポーネント
-- **スコープ**: 同一ドメイン内の複数ページで使用
-- **例**: `pages/articles/shared/ArticleForm.tsx` - 追加と編集で共通のフォーム
-
-#### 3. `features/[domain]/` 直下 (例: `articleCard/`)
-
-- **配置対象**: ドメインを跨いで使用されるコンポーネント
-- **スコープ**: 他のドメインからも参照可能
-- **例**: `features/articles/articleCard/` - mypage ドメインからも使用
-
-### 配置の判断基準
-
-| 使用箇所                   | 配置先                              | 具体例                           |
-| -------------------------- | ----------------------------------- | -------------------------------- |
-| 単一ページ内のみ           | `pages/[domain]/[page]/components/` | 記事作成ページ専用のエディタ     |
-| 同一ドメイン内の複数ページ | `pages/[domain]/shared/`            | 記事の追加・編集で共通のフォーム |
-| 複数ドメインで使用         | `features/[domain]/`                | マイページで表示する記事カード   |
-| 全ドメインで汎用的に使用   | `components/`                       | Button, Dialog 等の基本 UI       |
 
 ## pages
 
@@ -285,3 +243,48 @@ providers/
 ├─ AuthProvider.tsx
 └─ ...
 ```
+
+## トラブルシューティング
+
+### コンポーネントの配置
+
+| 使用箇所                   | 配置先                              | 具体例                           |
+| -------------------------- | ----------------------------------- | -------------------------------- |
+| 単一ページ内のみ           | `pages/[domain]/[page]/components/` | 記事作成ページ専用のエディタ     |
+| 同一ドメイン内の複数ページ | `pages/[domain]/shared/`            | 記事の追加・編集で共通のフォーム |
+| 複数ドメインで使用         | `features/[domain]/`                | マイページで表示する記事カード   |
+| 全ドメインで汎用的に使用   | `components/`                       | Button, Dialog 等の基本 UI       |
+
+#### 1. `pages/[domain]/[page]/components/`
+
+- **配置対象**: そのページ専用のコンポーネント
+- **スコープ**: 単一ページ内でのみ使用
+- **例**: `pages/articles/create/components/ArticleCreateForm.tsx`
+
+#### 2. `pages/[domain]/shared/`
+
+- **配置対象**: 同じドメイン内で複数ページで共通利用するコンポーネント
+- **スコープ**: 同一ドメイン内の複数ページで使用
+- **例**: `pages/articles/shared/ArticleForm.tsx` - 追加と編集で共通のフォーム
+
+#### 3. `features/[domain]/` (例: `articleCard/`)
+
+- **配置対象**: ドメインを跨いで使用されるコンポーネント
+- **スコープ**: 他のドメインからも参照可能
+- **例**: `features/articles/articleCard/` - mypage ドメインからも使用
+
+#### 4. `components/`
+
+- **配置対象**: 全ドメインで汎用的に使用する基本 UI コンポーネント
+- **スコープ**: アプリケーション全体
+- **例**: `components/buttons/Button/`, `components/elements/Dialog/`
+
+### 関数・ユーティリティの配置
+
+- ドメインに依存しない汎用的な関数・hooks → `functions/`
+
+### 型定義の配置
+
+- ドメイン固有の型 → `features/[domain]/`
+- 汎用的な共通型 → `functions/types/`
+- グローバル型定義 → `@types/`
