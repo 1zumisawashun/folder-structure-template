@@ -1,77 +1,176 @@
 # folder-structure-template
 
-- React・Next.js のディレクトリ構成の骨子をまとめたリポジトリです
-- スタイルは CSS Modules を想定しています
-
 ## Overview
 
-- [React](https://github.com/1zumisawashun/folder-structure-template/blob/main/react-vite/README.md)
+React・Next.js のディレクトリ構成の骨子をまとめたリポジトリです
 
-- [Next.js Page Router](https://github.com/1zumisawashun/folder-structure-template/blob/main/nextjs-page-router/README.md)
+### 前提
 
-- [Next.js App Router](https://github.com/1zumisawashun/folder-structure-template/blob/main/nextjs-app-router/README.md)
+- **ルーティング**: Next.js App Router
+- **スタイリング**: CSS Modules
+- **テスト**: Jest (or Vitest) + React Testing Library
+- **UI ドキュメント**: Storybook
+
+```
+app/
+├─ (pages)/
+├─ @types/
+├─ assets/
+├─ components/
+├─ features/
+├─ functions/
+├─ pages/
+├─ providers/
+└─ ...
+```
+
+## (pages)
+
+- Next.js App Router のルーティングに責務を持つディレクトリ
+- `layout.tsx`, `page.tsx`, `loading.tsx`, `error.tsx` などの Next.js の特殊ファイルを配置
+- App Router の世界観に従い、ルーティングとデータフェッチングを担当
+
+```
+(pages)/
+├─ (root)/
+│  ├─ layout.tsx
+│  └─ page.tsx
+├─ about/
+│  └─ page.tsx
+├─ dashboard/
+│  ├─ layout.tsx
+│  ├─ page.tsx
+│  └─ loading.tsx
+└─ ...
+```
+
+## @types
+
+- グローバルな型定義を配置するディレクトリ
+- 外部ライブラリの型拡張や、アプリケーション全体で使用する共通の型定義を管理
+
+```
+@types/
+├─ global.d.ts
+├─ env.d.ts
+└─ ...
+```
 
 ## assets
+
+- 静的アセット(画像、フォント、スタイル)を管理するディレクトリ
+- スタイルは**ITCSS**のアーキテクチャに従って構成
 
 ```
 assets/
 ├─ images/
+│   ├─ icons/
+│   ├─ logos/
+│   └─ ...
+├─ fonts/
 │   └─ ...
 └─ styles/
-    ├─ components/
-    ├─ elements/
-    ├─ generics/
-    ├─ objects/
-    ├─ settings/
-    ├─ tools/
-    ├─ utilities/
-    └─ app.css
+    ├─ settings/      # 変数、カラー、フォントサイズなどの設定
+    ├─ tools/         # mixinや関数
+    ├─ generics/      # リセットCSS、normalize.css
+    ├─ elements/      # 素のHTML要素(h1, a, button等)
+    ├─ objects/       # レイアウト用の汎用クラス
+    ├─ components/    # 特定のUIコンポーネント用スタイル
+    ├─ utilities/     # ユーティリティクラス(margin, padding等)
+    └─ app.css        # 上記をインポートするエントリーポイント
 ```
 
-- ITCSS のガイドラインは[こちら](https://github.com/1zumisawashun/sass-template)
+**参考**: ITCSS の詳細なガイドラインは[こちら](https://github.com/1zumisawashun/sass-template)
 
 ## components
+
+- アプリケーション全体で再利用可能な UI コンポーネントを管理
+- **Base UI**(headless UI)を推奨 - ロジックと見た目を分離し、柔軟なカスタマイズが可能
+- 各コンポーネントには`.module.css`, `.stories.tsx`, `.test.tsx`を含める
 
 ```
 components/
 ├─ buttons/
-│  └─ Button
+│  └─ Button/
 │     ├─ index.module.css
 │     ├─ index.stories.tsx
 │     ├─ index.test.tsx
 │     └─ index.tsx
 ├─ elements/
-│  └─ Dialog
-│     ├─ index.module.css
-│     ├─ index.stories.tsx
-│     ├─ index.test.tsx
-│     └─ index.tsx
+│  ├─ Dialog/
+│  │  ├─ index.module.css
+│  │  ├─ index.stories.tsx
+│  │  ├─ index.test.tsx
+│  │  └─ index.tsx
+│  ├─ Popover/
+│  └─ ...
 ├─ forms/
 │  ├─ Checkbox/
+│  │  ├─ index.module.css
+│  │  ├─ index.stories.tsx
+│  │  ├─ index.test.tsx
+│  │  └─ index.tsx
 │  ├─ TextInput/
 │  ├─ Select/
 │  └─ ...
 └─ layouts/
-      └─ VStack
-         ├─ index.module.css
-         ├─ index.stories.tsx
-         ├─ index.test.tsx
-         └─ index.tsx
+   └─ VStack/
+      ├─ index.module.css
+      ├─ index.stories.tsx
+      ├─ index.test.tsx
+      └─ index.tsx
 ```
+
+### Base UI (Headless UI) について
+
+- **メリット**:
+  - ロジック(状態管理、アクセシビリティ)と見た目を完全に分離
+  - プロジェクト固有のデザインシステムに柔軟に対応
+  - スタイリングライブラリに依存しない
+  - アクセシビリティがデフォルトで担保される
+- **推奨ライブラリ**: [Base UI](https://base-ui.com/), [Radix UI](https://www.radix-ui.com/), [Headless UI](https://headlessui.com/)
 
 ## functions
 
+- アプリケーション全体で使用する汎用的なロジック・ユーティリティを管理
+- ドメインに依存しない、純粋関数や共通処理を配置
+
 ```
 functions/
-├─ constants/
-├─ helpers/
-├─ hooks/
-│     └─ useDisclosure/
-│        ├─ index.test.ts
-│        └─ index.ts
-├─ libs/
-└─ types/
+├─ constants/         # 定数定義
+│  ├─ routes.ts
+│  ├─ config.ts
+│  └─ ...
+├─ helpers/           # ヘルパー関数・ユーティリティ
+│  ├─ format/
+│  │  ├─ date.ts
+│  │  └─ currency.ts
+│  ├─ validation/
+│  └─ ...
+├─ hooks/             # カスタムフック
+│  ├─ useDisclosure/
+│  │  ├─ index.test.ts
+│  │  └─ index.ts
+│  ├─ useLocalStorage/
+│  ├─ useDebounce/
+│  └─ ...
+├─ libs/              # 外部ライブラリのラッパー・初期化
+│  ├─ axios.ts
+│  ├─ dayjs.ts
+│  └─ ...
+└─ types/             # 共通型定義
+   ├─ api.ts
+   ├─ models.ts
+   └─ ...
 ```
+
+### 配置の指針
+
+- **features vs functions**:
+  - 特定のドメイン(todo, user 等)に紐づく → `features/`
+  - 汎用的でドメインに依存しない → `functions/`
+- **hooks**: ビジネスロジックを含まない汎用的な hooks のみ配置
+- **types**: API レスポンス型、共通モデル型など、複数箇所で使用される型
 
 ## features
 
@@ -92,52 +191,15 @@ features/
 └─...
 ```
 
-## Troubleshoot
+## providers
 
-<details>
-<summary>featuresディレクトリに格納するか迷った時</summary>
+- アプリケーション全体で使用する Context や Provider、状態管理を配置
+- React Context API、TanStack Query、Jotai、Zustand などのプロバイダーを管理
 
-- layer か feature か、どちらに格納するかはトレードオフなので正解はない
-- これは案件のフェーズやサイズにもよる
-  - 個人的観測としてスモール〜ミドルサイズは layer がやりやすい、ミドル〜ラージサイズは feature が管理しやすい
-
-</details>
-
-<details>
-<summary>ドメインを持つコンポーネントを別のドメインで使いたい</summary>
-
-- 具体的にはプロダクトのドメインがある ProductCard コンポーネントをマイページのドメインでも使用したい場合
-- 以下添付画像のように features/product/components/ProductCard に格納する（components/elements には格納しない）
-- features/ドメイン/〇〇のようにドメイン直下は別ドメイン or 同ドメインかつ別ページでも使用される
-- 例えば ProductForm は ProductCreate と ProductEdit で使われているので features/product/components/に格納している
-- hooks や型定義も同様にドメイン直下に配置して暗黙的に使いまわされることを明示する
-- テストを書くのもここに集中させればよくないか？
-
-<img width="374" alt="image" src="https://github.com/1zumisawashun/unifree-client/assets/65071534/c9034c1e-e6b8-459e-ac70-1ce6874d5e78">
-
-</details>
-
-## Next.js App Router
-
-### フェッチ戦略
-
-以下で統一する
-
-- (pages)ディレクトリでフェッチをする
-- component level fetch は実施しない
-- (pages)ディレクトリでフェッチした値を props で小コンポーネントに流す
-
-※従来の Page Router との差分を無くし認知負荷を下げる意図がある + App Router に依存する箇所を(pages)ディレクトリに集約することで、万が一 App Router を剥がす時に容易にする
-
-### 注意点
-
-- 本来であれば「自律分散なデータ取得」が App Router の基本になるので従来の Page Router（gssp）のデータ取得はアンチパターンかもしれない
-
-### 「自律分散なデータ取得」のメリット
-
-> 非同期コンポーネントにすることで Streaming SSR + Suspense ができる
-
-### トラブルシューティング
-
-- 実装上どうしても(pages)ディレクトリ以外でフェッチをしなくてはいけない時は？
-  - Presentation / Container パターンを使う
+```
+providers/
+├─ QueryProvider.tsx
+├─ ThemeProvider.tsx
+├─ AuthProvider.tsx
+└─ ...
+```
