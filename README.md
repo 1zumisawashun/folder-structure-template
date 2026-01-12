@@ -49,7 +49,6 @@ app/
 - **データフェッチング**: 基本的にここでデータフェッチを行い、データソースから取得したデータをそのまま`pages/`に渡す
 - **インターフェース**: データソース(API レスポンス)に依存する形で`pages/`のインターフェースを定義する
 - **変換処理**: データの変換(transform)は行わず、取得したデータをそのまま`pages/`に渡して表示ロジックを委譲
-- **依存関係**: datasourceに依存し、データフェッチロジックを実装する責務を持つ
 
 ### ディレクトリ構成
 
@@ -230,12 +229,18 @@ features/
    └─ ...
 ```
 
+**注意事項**:
+
+- **datasourceのレスポンス型を直接インターフェースに定義することは避ける**
+  - 理由: 複数のドメインで同じコンポーネントを使う場合、datasourceに依存する型(Branded-Type等)をユニオン型で扱う必要が出てくるため
+  - 例: `ArticleCard`をarticlesドメインとmypageドメインの両方で使う場合、各ドメインのdatasource型が異なると型の整合性が取れなくなる
+  - 推奨: propsとして必要な最小限のプリミティブな型を定義し、datasourceの型に直接依存させない
+
 ## pages
 
 - **実装の本丸**: 基本的にはここにコードを追加していく
 - `(pages)/`と同じディレクトリ構成で、各ページの実装を配置
 - ページ専用のコンポーネントは`components/`配下に配置
-- **依存関係**: 基本的にdatasourceに依存し、`(pages)/`から渡されたデータを表示する責務を持つ
 
 ### ディレクトリ構成
 
@@ -272,7 +277,6 @@ pages/
 - **スコープ**: 同一ドメイン内の複数ページで使用
 - **例**: `pages/articles/shared/ArticleForm.tsx` - 追加と編集で共通のフォーム
 - **使用例**: `ArticleCreateForm`が`ArticleForm`を使って作成ページ用のフォームを構築
-- **依存関係**: datasourceに依存せず、propsとして受け取ったデータを表示する純粋なUIコンポーネントとして実装
 
 ## providers
 
@@ -315,7 +319,6 @@ providers/
 - **配置対象**: 同じドメイン内で複数ページで共通利用するコンポーネント
 - **スコープ**: 同一ドメイン内の複数ページで使用
 - **例**: `pages/articles/shared/ArticleForm.tsx` - 追加と編集で共通のフォーム
-- **依存関係**: datasourceに依存せず、propsとして受け取ったデータを表示する純粋なUIコンポーネントとして実装
 
 #### 3. `features/[domain]/` (例: `articleCard/`)
 
@@ -338,3 +341,79 @@ providers/
 - ドメイン固有の型 → `features/[domain]/`
 - 汎用的な共通型 → `functions/types/`
 - グローバル型定義 → `@types/`
+
+### datasourceの依存関係
+
+**概要**: データフェッチ(datasource)に対する各ディレクトリの依存関係ルール
+
+| ディレクトリ                        | datasource依存 | 説明                                                      |
+| ----------------------------------- | -------------- | --------------------------------------------------------- |
+| `(pages)/`                          | ✅ 依存する     | データフェッチロジックを実装し、`pages/`にデータを渡す    |
+| `pages/[domain]/[page]/`            | ✅ 依存する     | `(pages)/`から渡されたデータを表示する                    |
+| `pages/[domain]/shared/`            | ❌ 依存しない   | propsで受け取ったデータを表示する純粋なUIコンポーネント   |
+| `pages/[domain]/[page]/components/` | ❌ 依存しない   | propsで受け取ったデータを表示する純粋なUIコンポーネント   |
+| `features/[domain]/`                | ❌ 依存しない   | propsで受け取ったデータを表示する純粋なUIコンポーネント   |
+| `components/`                       | ❌ 依存しない   | 全ドメインで再利用可能な純粋なUIコンポーネント            |
+
+**詳細**: 各ディレクトリの役割
+
+#### `(pages)/` - データフェッチ層
+
+- **役割**: データソース(API、データベース等)からデータを取得
+- **責務**: データフェッチロジックの実装
+- **データの流れ**: datasource → `(pages)/` → `pages/`
+- **実装例**:
+  ```tsx
+  // (pages)/articles/create/page.tsx
+  import { ArticleCreate } from "@/pages/articles/create/ArticleCreate";
+  import { fetchCategories } from "@/datasources/categories";
+
+  export default async function Page() {
+    const categories = await fetchCategories();
+    return <ArticleCreate categories={categories} />;
+  }
+  ```
+
+#### `pages/[domain]/[page]/` - プレゼンテーション層(データ依存)
+
+- **役割**: `(pages)/`から渡されたデータを使って画面を構築
+- **責務**: 表示ロジックの実装
+- **データの流れ**: `(pages)/`から受け取ったデータを`shared/`や`components/`に渡す
+- **実装例**:
+  ```tsx
+  // pages/articles/create/ArticleCreate.tsx
+  export function ArticleCreate({ categories }: { categories: Category[] }) {
+    return <ArticleForm categories={categories} />;
+  }
+  ```
+
+#### `pages/[domain]/shared/` - プレゼンテーション層(純粋UI)
+
+- **役割**: 同一ドメイン内で再利用可能なUIコンポーネント
+- **責務**: propsで受け取ったデータの表示のみ
+- **データの流れ**: propsとして受け取り、表示する
+- **実装例**:
+  ```tsx
+  // pages/articles/shared/ArticleForm.tsx
+  export function ArticleForm({ categories }: { categories: Category[] }) {
+    return (
+      <form>
+        <CategorySelect categories={categories} />
+      </form>
+    );
+  }
+  ```
+
+**注意事項**: 
+
+- **datasourceのレスポンス型を直接インターフェースに定義することは避ける**
+  - 理由: 追加・編集など複数の画面で同じコンポーネントを使う場合、datasourceに依存する型(Branded-Type等)をユニオン型で扱う必要が出てくるため
+  - 例: `ArticleForm`を作成と編集の両方で使う場合、`Article | ArticleDraft`のようなユニオン型が必要になり、型の複雑性が増す
+  - 推奨: propsとして必要な最小限のプリミティブな型を定義し、datasourceの型に直接依存させない
+
+**ベストプラクティス**:
+
+1. **データフェッチは`(pages)/`でのみ実行**: 他の層ではデータフェッチを行わない
+2. **`shared/`と`components/`は純粋に保つ**: datasourceに依存せず、テストが容易で再利用性が高い状態を維持
+3. **データ変換は最小限に**: `(pages)/`ではデータ変換を行わず、取得したデータをそのまま渡す
+4. **型安全性の確保**: datasourceのレスポンス型を`pages/`のprops型として定義し、型安全性を保つ
